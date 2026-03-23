@@ -7,7 +7,7 @@ authors = ["Wilovy09"]
 license = "MIT"
 categories = ["development-tools", "parser-implementations", "web-programming"]
 repository = "https://github.com/Wilovy09/leptos-content-collection"
-homepage = "https://wilovy09.github.io/leptos-content-collection/"
+homepage = "https://wilovy09.github.io/leptos-content-collection"
 
 [features]
 default = ["buildtime"]
