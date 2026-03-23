@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Posts — Mi Blog{% endblock title %}
+
+{% block content %}
+<h2>Posts</h2>
+
+{% if posts %}
+<ul class="post-list">
+    {% for post in posts %}
+    <li class="post-item">
+        <a href="/posts/{{ post.slug }}">{{ post.title }}</a>
+        <div class="post-meta">{{ post.date }}</div>
+        <div class="post-summary">{{ post.summary }}</div>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No hay posts disponibles.</p>
+{% endif %}
+{% endblock content %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}404 — Mi Blog{% endblock title %}
+
+{% block content %}
+<p class="error-code">404</p>
+<h2>Post no encontrado</h2>
+<p class="error-message">El post <strong>{{ slug }}</strong> no existe.</p>
+<a href="/">← Volver al inicio</a>
+{% endblock content %}

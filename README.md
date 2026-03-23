@@ -9,14 +9,23 @@ Define a schema struct, point it at a directory of Markdown files, and get back 
 
 Despite the name, the crate has **no dependency on Leptos** and works in any Rust project (Axum, Actix-web, static site generators, CLIs, etc.).
 
+`serde` usage in examples (such as `#[derive(Deserialize)]`) comes from the `serde` crate itself, not from any web framework.
+
 ## Features
 
 | Feature | Default | Description |
 |---|---|---|
 | `buildtime` | ✅ | Embed content in the binary at compile time via `build.rs` |
-| `ssr` | ❌ | Load content from the filesystem at runtime |
+| `ssr` | ❌ | Load content from the filesystem at runtime (commonly used in server/native environments) |
 
 Both features can be active at the same time.
+
+## What this crate is (and is not)
+
+- It is a typed content loader for Markdown + frontmatter.
+- It is not a templating engine replacement.
+- It can be used with templating engines, component frameworks, or plain string rendering.
+- If your workflow is "convert Markdown to JSON and deserialize with serde", that is a valid alternative; this crate exists to skip that conversion step and read Markdown collections directly.
 
 ## Content format
 
@@ -112,10 +121,10 @@ Content is parsed during `cargo build` and embedded directly into the binary. No
 ```toml
 # Cargo.toml
 [dependencies]
-leptos-content-collection = "0.1"
+leptos-content-collection = "1.2"
 
 [build-dependencies]
-leptos-content-collection = "0.1"
+leptos-content-collection = "1.2"
 ```
 
 ### 2. Create a `build.rs`
@@ -125,6 +134,9 @@ fn main() {
     leptos_content_collection::codegen::generate("content/posts", "posts").unwrap();
 }
 ```
+
+`build.rs` is required in buildtime mode because code generation happens during compilation.
+`codegen::generate` writes Rust source into `$OUT_DIR`, and your app includes that generated file with `include!(...)`.
 
 `generate(dir, name)` scans `dir` for `.md` files, embeds their content and writes
 `$OUT_DIR/{name}_collection.rs`. It also emits `cargo:rerun-if-changed` directives
@@ -160,14 +172,16 @@ fn main() {
 
 ---
 
-## SSR / runtime
+## Runtime filesystem loading (`ssr` feature)
 
 Enable the `ssr` feature to read files from the filesystem at request time. Useful when you want to update content without recompiling.
+
+Note: the feature name is `ssr`, but this mode only means "load from disk at runtime". It does not perform rendering by itself.
 
 ```toml
 # Cargo.toml
 [dependencies]
-leptos-content-collection = { version = "0.1", features = ["ssr"] }
+leptos-content-collection = { version = "1.2", features = ["ssr"] }
 ```
 
 ```rust
@@ -197,16 +211,16 @@ fn main() {
 
 ## Usage with Leptos
 
-A typical Leptos + Axum setup uses **both** features: `buildtime` so the WASM bundle has access to the data without server round-trips, and `ssr` inside `#[server]` functions for runtime loading if needed.
+A typical Leptos + Axum setup can use **both** features: `buildtime` so the WASM bundle has embedded data, and `ssr` inside `#[server]` functions only when runtime disk loading is desired.
 
 ### `Cargo.toml`
 
 ```toml
 [dependencies]
-leptos-content-collection = { path = "…" }          # buildtime is the default
+leptos-content-collection = "1.2.0"          # buildtime is the default
 
 [build-dependencies]
-leptos-content-collection = { path = "…" }           # for build.rs codegen
+leptos-content-collection = "1.2.0"           # for build.rs codegen
 
 [features]
 ssr = [
@@ -259,7 +273,7 @@ fn get_posts() -> Vec<PostFrontmatter> {
 
 | Method | Feature | Description |
 |---|---|---|
-| `Collection::load(dir)` | `ssr` | Reads `.md` files from `dir` at runtime |
+| `Collection::load(dir)` | `ssr` | Reads `.md` files from `dir` at runtime (filesystem) |
 | `Collection::from_embedded(entries)` | `buildtime` | Builds a collection from compile-time embedded data |
 | `collection.entries()` | — | Returns `&[CollectionEntry<T>]` |
 | `collection.into_entries()` | — | Consumes the collection, returns `Vec<CollectionEntry<T>>` |

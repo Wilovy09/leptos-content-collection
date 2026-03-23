@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Blog{% endblock title %}</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        header {
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        header a { text-decoration: none; color: inherit; }
+        header h1 { font-size: 1.4rem; margin: 0; }
+        header nav a { color: #555; font-size: 0.9rem; margin-left: 1rem; }
+        header nav a:hover { color: #0066cc; }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e5e5;
+            font-size: 0.85rem;
+            color: #888;
+            text-align: center;
+        }
+
+        /* Post list */
+        .post-list { list-style: none; padding: 0; margin: 0; }
+        .post-item {
+            padding: 1.25rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .post-item:last-child { border-bottom: none; }
+        .post-item a {
+            font-size: 1.15rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: #0066cc;
+        }
+        .post-item a:hover { text-decoration: underline; }
+        .post-meta {
+            font-size: 0.85rem;
+            color: #777;
+            margin-top: 0.25rem;
+        }
+        .post-summary {
+            margin-top: 0.4rem;
+            color: #444;
+            font-size: 0.95rem;
+        }
+
+        /* Single post */
+        .post-header { margin-bottom: 2rem; }
+        .post-header h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+        .post-header .meta { color: #777; font-size: 0.9rem; }
+        .back-link { display: inline-block; margin-bottom: 1.5rem; color: #555; text-decoration: none; font-size: 0.9rem; }
+        .back-link:hover { color: #0066cc; }
+
+        /* Markdown content */
+        .md-content { line-height: 1.75; }
+        .md-content h1, .md-content h2, .md-content h3 { line-height: 1.25; margin: 2rem 0 0.75rem; }
+        .md-content h2 { border-bottom: 1px solid #ebebeb; padding-bottom: 0.35rem; }
+        .md-content p { margin: 1rem 0; }
+        .md-content a { color: #0066cc; text-underline-offset: 2px; }
+        .md-content ul, .md-content ol { padding-left: 1.5rem; }
+        .md-content li { margin: 0.3rem 0; }
+        .md-content blockquote {
+            border-left: 4px solid #ddd;
+            margin: 1.5rem 0;
+            padding: 0.5rem 1rem;
+            color: #555;
+        }
+        .md-content pre {
+            background: #0d1117;
+            color: #e6edf3;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            overflow-x: auto;
+        }
+        .md-content code { font-family: "Fira Code", "JetBrains Mono", ui-monospace, monospace; font-size: 0.9em; }
+        .md-content pre code { font-size: 0.85em; }
+        .md-content table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        .md-content th, .md-content td { border: 1px solid #e0e0e0; padding: 0.55rem 0.8rem; }
+        .md-content th { background: #f6f8fa; font-weight: 600; }
+
+        /* Error page */
+        .error-code { font-size: 4rem; font-weight: 800; color: #e0e0e0; margin: 0; }
+        .error-message { color: #555; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="/">Mi Blog</a></h1>
+        <nav>
+            <a href="/">Posts</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock content %}
+    </main>
+
+    <footer>
+        Construido con <a href="https://github.com/Wilovy09/leptos-content-collection">leptos-content-collection</a>,
+        <a href="https://actix.rs">Actix-web</a> y
+        <a href="https://keats.github.io/tera">Tera</a>
+    </footer>
+</body>
+</html>

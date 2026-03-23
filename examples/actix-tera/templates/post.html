@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} — Mi Blog{% endblock title %}
+
+{% block content %}
+<a class="back-link" href="/">← Volver</a>
+
+<div class="post-header">
+    <h1>{{ post.title }}</h1>
+    <p class="meta">{{ post.date }} — {{ post.summary }}</p>
+</div>
+
+<div class="md-content">
+    {{ post.html | safe }}
+</div>
+{% endblock content %}

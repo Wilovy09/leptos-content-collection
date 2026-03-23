@@ -1,0 +1,211 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;600;700&display=swap");
+
+:root {
+  --bg-0: #f2eee6;
+  --bg-1: #e6dbc5;
+  --ink: #1f2f2a;
+  --muted: #5d6b66;
+  --card: rgba(255, 252, 244, 0.82);
+  --line: rgba(31, 47, 42, 0.16);
+  --accent: #0d8c63;
+  --shadow: 0 18px 45px rgba(30, 40, 35, 0.18);
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(circle at 85% 10%, rgba(13, 140, 99, 0.25), transparent 42%),
+    radial-gradient(circle at 15% 90%, rgba(44, 95, 77, 0.2), transparent 38%),
+    linear-gradient(150deg, var(--bg-0), var(--bg-1));
+  color: var(--ink);
+  font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+.page {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 860px;
+  padding: clamp(1.25rem, 3.6vw, 3rem) clamp(1rem, 4.5vw, 2.25rem) clamp(2rem, 6vw, 4rem);
+}
+
+.page-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(2.15rem, 4.5vw, 3.4rem);
+  letter-spacing: 0.01em;
+  line-height: 1.06;
+  margin: 0 0 clamp(1rem, 2.8vw, 1.8rem);
+}
+
+.posts-layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  align-items: start;
+}
+
+.post-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.post-list-item {
+  appearance: none;
+  background: rgba(255, 252, 244, 0.68);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.8rem 0.9rem;
+  text-align: left;
+  transition: transform 120ms ease, border-color 120ms ease, background-color 120ms ease;
+}
+
+.post-list-item:hover {
+  border-color: rgba(13, 140, 99, 0.45);
+  transform: translateY(-1px);
+}
+
+.post-list-item.is-active {
+  background: rgba(13, 140, 99, 0.12);
+  border-color: rgba(13, 140, 99, 0.52);
+}
+
+.post-list-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.post-list-meta {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.post-card {
+  backdrop-filter: blur(2px);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: clamp(1rem, 3vw, 1.8rem);
+}
+
+.post-header {
+  border-bottom: 1px dashed var(--line);
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+}
+
+.post-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  line-height: 1.18;
+  margin: 0;
+}
+
+.post-meta {
+  color: var(--muted);
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0.45rem 0 0;
+}
+
+.markdown-body {
+  color: #24342f;
+  font-size: clamp(1rem, 1.2vw + 0.8rem, 1.15rem);
+  line-height: 1.72;
+}
+
+.markdown-body > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  font-family: "Fraunces", Georgia, serif;
+  line-height: 1.2;
+  margin: 1.55rem 0 0.65rem;
+}
+
+.markdown-body h1 {
+  font-size: clamp(1.35rem, 2.2vw, 1.8rem);
+}
+
+.markdown-body h2 {
+  font-size: clamp(1.22rem, 2vw, 1.55rem);
+}
+
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body pre,
+.markdown-body blockquote {
+  margin: 0.8rem 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.25rem;
+}
+
+.markdown-body a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.14em;
+}
+
+.markdown-body code {
+  background: rgba(13, 140, 99, 0.1);
+  border-radius: 7px;
+  font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-size: 0.92em;
+  padding: 0.1em 0.35em;
+}
+
+.markdown-body pre {
+  background: #1f2f2a;
+  border-radius: 12px;
+  color: #f5f6f2;
+  overflow-x: auto;
+  padding: 0.85rem 1rem;
+}
+
+.markdown-body pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.error-message {
+  color: #8a1a1a;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .posts-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .post-list {
+    grid-template-columns: 1fr;
+  }
+
+  .page {
+    padding-top: 1rem;
+  }
+
+  .post-card {
+    border-radius: 14px;
+    padding: 1rem;
+  }
+}

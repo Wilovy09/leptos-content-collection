@@ -1,0 +1,12 @@
+[package]
+name = "freya"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+freya = { git = "https://github.com/marc2332/freya", features = ["markdown"] }
+leptos-content-collection = "1.1.0"
+serde = { version = "1.0", features = ["derive"] }
+
+[build-dependencies]
+leptos-content-collection = "1.1.0"
