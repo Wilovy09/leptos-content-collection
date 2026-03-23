@@ -1,0 +1,1432 @@
+<!--
+DOCUMENTATION CREATED WITH AI AND CERTAIN PARTS OF THE PROJECT ALSO USED AI
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      leptos-content-collection — Astro-style content collections for Rust
+    </title>
+    <meta
+      name="description"
+      content="A zero-boilerplate Rust crate for loading typed Markdown content collections. Works at build time or runtime, framework-agnostic."
+    />
+    <link rel="stylesheet" href="webpage/app.css" />
+  </head>
+  <body>
+    <button class="menu-toggle" aria-label="Open menu">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path
+          d="M1 2.5h14M1 8h14M1 13.5h14"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          fill="none"
+        />
+      </svg>
+      <span data-i18n="menu.toggle">Menu</span>
+    </button>
+
+    <div class="overlay"></div>
+
+    <div class="layout">
+      <!-- ======== SIDEBAR ======== -->
+      <nav class="sidebar" aria-label="Documentation navigation">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+              />
+              <polyline points="14,2 14,8 20,8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <line x1="10" y1="9" x2="8" y2="9" />
+            </svg>
+            leptos-content-collection
+          </div>
+          <div class="sidebar-version">v0.1.0</div>
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="es">ES</button>
+          </div>
+        </div>
+
+        <div class="sidebar-links">
+          <span class="sidebar-group-label" data-i18n="nav.group.start"
+            >Getting Started</span
+          >
+          <a href="#overview" class="sidebar-link" data-i18n="nav.overview"
+            >Overview</a
+          >
+          <a href="#features" class="sidebar-link" data-i18n="nav.features"
+            >Features</a
+          >
+          <a
+            href="#content-format"
+            class="sidebar-link"
+            data-i18n="nav.content-format"
+            >Content Format</a
+          >
+          <a
+            href="#markdown-styling"
+            class="sidebar-link"
+            data-i18n="nav.markdown-styling"
+            >Markdown Styling</a
+          >
+
+          <span class="sidebar-group-label" data-i18n="nav.group.usage"
+            >Usage</span
+          >
+          <a href="#buildtime" class="sidebar-link">
+            <span data-i18n="nav.buildtime">Buildtime</span>
+            <span class="nav-badge" data-i18n="nav.default-badge">default</span>
+          </a>
+          <a
+            href="#bt-install"
+            class="sidebar-link sub"
+            data-i18n="nav.bt-install"
+            >1. Installation</a
+          >
+          <a
+            href="#bt-buildrs"
+            class="sidebar-link sub"
+            data-i18n="nav.bt-buildrs"
+            >2. build.rs</a
+          >
+          <a
+            href="#bt-schema"
+            class="sidebar-link sub"
+            data-i18n="nav.bt-schema"
+            >3. Schema &amp; load</a
+          >
+          <a href="#ssr" class="sidebar-link" data-i18n="nav.ssr"
+            >SSR / Runtime</a
+          >
+          <a href="#leptos" class="sidebar-link" data-i18n="nav.leptos"
+            >Leptos Integration</a
+          >
+          <a href="#yew" class="sidebar-link" data-i18n="nav.yew"
+            >Yew Integration</a
+          >
+          <a href="#dioxus" class="sidebar-link" data-i18n="nav.dioxus"
+            >Dioxus Integration</a
+          >
+          <a href="#freya" class="sidebar-link" data-i18n="nav.freya"
+            >Freya Integration</a
+          >
+
+          <span class="sidebar-group-label" data-i18n="nav.group.ref"
+            >Reference</span
+          >
+          <a href="#api-collection" class="sidebar-link">Collection&lt;T&gt;</a>
+          <a href="#api-entry" class="sidebar-link">CollectionEntry&lt;T&gt;</a>
+          <a href="#api-embedded-entry" class="sidebar-link">EmbeddedEntry</a>
+          <a href="#api-error" class="sidebar-link">CollectionError</a>
+          <a href="#api-codegen" class="sidebar-link">codegen::generate</a>
+
+          <span class="sidebar-group-label" data-i18n="nav.group.meta"
+            >Meta</span
+          >
+          <a
+            href="#dependencies"
+            class="sidebar-link"
+            data-i18n="nav.dependencies"
+            >Dependencies</a
+          >
+        </div>
+      </nav>
+
+      <!-- ======== CONTENT ======== -->
+      <main class="content">
+        <!-- Hero -->
+        <div class="hero">
+          <h1 class="hero-name"><span>leptos</span>-content-collection</h1>
+          <p class="hero-tagline" data-i18n="hero.tagline">
+            Astro-style content collections for Rust — define a schema struct,
+            point it at a directory of Markdown files, get back a fully typed
+            collection.
+          </p>
+          <div class="badges">
+            <span class="badge badge-orange">crates.io v0.1.0</span>
+            <span class="badge badge-blue">MIT</span>
+            <span class="badge badge-green" data-i18n="badge.agnostic"
+              >framework-agnostic</span
+            >
+          </div>
+        </div>
+
+        <!-- ---- Overview ---- -->
+        <section class="section" id="overview" data-section="overview">
+          <h2 class="section-title" data-i18n="overview.title">Overview</h2>
+          <p data-i18n-html="overview.p1">
+            <code>leptos-content-collection</code> brings the content
+            collections concept popularised by
+            <a
+              href="https://docs.astro.build/en/guides/content-collections/"
+              target="_blank"
+              >Astro</a
+            >
+            to the Rust ecosystem. Each directory of <code>.md</code> files
+            becomes a typed collection: your frontmatter is deserialised into a
+            Rust struct at compile time or load time, and the Markdown body can
+            be rendered to HTML on demand.
+          </p>
+          <div class="callout callout-tip">
+            <span class="callout-icon" aria-hidden="true"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  d="M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h64v-6a32.15,32.15,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Zm-16.11-9.34a57.6,57.6,0,0,0-46.56-46.55,8,8,0,0,0-2.66,15.78c16.57,2.79,30.63,16.85,33.44,33.45A8,8,0,0,0,176,104a9,9,0,0,0,1.35-.11A8,8,0,0,0,183.89,94.66Z"
+                ></path></svg
+            ></span>
+            <span data-i18n-html="overview.callout">
+              Despite the name, this crate has
+              <strong>no dependency on Leptos</strong>. It works equally well
+              with Axum, Actix-web, static site generators, CLIs, or any other
+              Rust project.
+            </span>
+          </div>
+        </section>
+
+        <!-- ---- Features ---- -->
+        <section class="section" id="features" data-section="features">
+          <h2 class="section-title" data-i18n="features.title">Features</h2>
+          <div class="feat-grid">
+            <div class="feat-card default">
+              <div class="feat-card-header">
+                <span class="feat-name">buildtime</span>
+                <span class="feat-default" data-i18n="feat.default"
+                  >default</span
+                >
+              </div>
+              <p class="feat-desc" data-i18n-html="feat.buildtime.desc">
+                Content files are parsed during <code>cargo build</code> and
+                embedded directly into the binary. No filesystem access at
+                runtime — works in SSR servers and WASM bundles alike.
+              </p>
+            </div>
+            <div class="feat-card">
+              <div class="feat-card-header">
+                <span class="feat-name">ssr</span>
+              </div>
+              <p class="feat-desc" data-i18n-html="feat.ssr.desc">
+                Reads <code>.md</code> files from the filesystem at request time
+                via <code>Collection::load()</code>. Useful when you want to
+                update content without recompiling.
+              </p>
+            </div>
+          </div>
+
+          <p data-i18n="features.intro">
+            Both features can be active simultaneously. The table below
+            summarises what each one enables:
+          </p>
+
+          <table class="api-table">
+            <thead>
+              <tr>
+                <th data-i18n="features.th.feature">Feature</th>
+                <th data-i18n="features.th.default">Default</th>
+                <th data-i18n="features.th.methods">Method unlocked</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>buildtime</code></td>
+                <td><span class="check-yes">✓</span></td>
+                <td>
+                  <code>Collection::from_embedded()</code>,
+                  <code>codegen::generate()</code>, <code>EmbeddedEntry</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ssr</code></td>
+                <td><span class="check-no">—</span></td>
+                <td><code>Collection::load()</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ---- Content Format ---- -->
+        <section
+          class="section"
+          id="content-format"
+          data-section="content-format"
+        >
+          <h2 class="section-title" data-i18n="format.title">Content Format</h2>
+          <p data-i18n-html="format.p">
+            Every <code>.md</code> file must start with a YAML frontmatter block
+            delimited by <code>---</code>. The <strong>slug</strong> for each
+            entry is the filename without the <code>.md</code> extension.
+          </p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-filename">content/posts/hello-world.md</span>
+              <button class="copy-btn" data-i18n="copy.btn">copy</button>
+            </div>
+            <pre><span class="md-fm">---</span>
+<span class="ym">title</span><span class="op">:</span> <span class="yv">"Hello, World!"</span>
+<span class="ym">date</span><span class="op">:</span>  <span class="yv">"2026-01-15"</span>
+<span class="ym">draft</span><span class="op">:</span> <span class="nm">false</span>
+<span class="md-fm">---</span>
+
+<span class="md-h"># Hello, World!</span>
+
+<span class="md-b">Your Markdown content goes here. **Bold**, _italic_, `code`.</span>
+
+<span class="md-h">## A section</span>
+
+<span class="md-b">More content...</span></pre>
+          </div>
+
+          <table class="api-table">
+            <thead>
+              <tr>
+                <th data-i18n="format.th.part">Part</th>
+                <th data-i18n="format.th.desc">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-i18n-html="format.row.fm.label">
+                  First <code>---</code> block
+                </td>
+                <td data-i18n-html="format.row.fm.desc">
+                  YAML frontmatter. Deserialised into your schema struct.
+                </td>
+              </tr>
+              <tr>
+                <td data-i18n="format.row.body.label">Body</td>
+                <td data-i18n-html="format.row.body.desc">
+                  Raw Markdown. Accessible via <code>entry.body</code> and
+                  renderable with <code>entry.render()</code>.
+                </td>
+              </tr>
+              <tr>
+                <td>Slug</td>
+                <td data-i18n-html="format.row.slug.desc">
+                  Filename without <code>.md</code>, e.g.
+                  <code>"hello-world"</code>.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ---- Markdown Styling ---- -->
+        <section
+          class="section"
+          id="markdown-styling"
+          data-section="markdown-styling"
+        >
+          <h2 class="section-title" data-i18n="mdstyle.title">
+            Styling rendered Markdown
+          </h2>
+          <p data-i18n-html="mdstyle.p1">
+            <code>entry.render()</code> returns an HTML string. Render it inside
+            a wrapper element (for example, <code>.md-content</code>) and scope
+            your typography styles to that wrapper.
+          </p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">html</span>
+              <button class="copy-btn" data-i18n="copy.btn">copy</button>
+            </div>
+            <pre>
+&lt;article class="md-content"&gt;
+  &lt;!-- Inject rendered HTML from entry.render() --&gt;
+&lt;/article&gt;</pre
+            >
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-filename">app.css</span>
+              <button class="copy-btn" data-i18n="copy.btn">copy</button>
+            </div>
+            <pre>
+.md-content {
+  line-height: 1.7;
+  color: #222;
+}
+
+.md-content h1,
+.md-content h2,
+.md-content h3 {
+  line-height: 1.25;
+  margin: 2rem 0 0.75rem;
+}
+
+.md-content h2 {
+  border-bottom: 1px solid #ebebeb;
+  padding-bottom: 0.35rem;
+}
+
+.md-content p {
+  margin: 1rem 0;
+}
+
+.md-content a {
+  color: #0066cc;
+  text-underline-offset: 2px;
+}
+
+.md-content pre {
+  background: #0d1117;
+  color: #e6edf3;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+}
+
+.md-content code {
+  font-family: "Fira Code", "JetBrains Mono", ui-monospace, monospace;
+}
+
+.md-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.md-content th,
+.md-content td {
+  border: 1px solid #e0e0e0;
+  padding: 0.55rem 0.8rem;
+}</pre
+            >
+          </div>
+
+          <p class="deps-note" data-i18n-html="mdstyle.note">
+            If your content can come from untrusted sources, sanitize the
+            generated HTML before injecting it in the browser.
+          </p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- BUILDTIME                                                     -->
+        <!-- ============================================================ -->
+        <section class="section" id="buildtime" data-section="buildtime">
+          <h2 class="section-title">
+            <span data-i18n="bt.title">Buildtime</span>
+            <span class="section-title-badge" data-i18n="feat.default"
+              >default</span
+            >
+          </h2>
+          <p data-i18n-html="bt.p">
+            Content is processed during <code>cargo build</code> and embedded in
+            the binary as static string literals. No <code>std::fs</code> calls
+            happen at runtime, so the same binary works for both SSR servers and
+            WASM bundles.
+          </p>
+
+          <div class="steps">
+            <!-- Step 1 -->
+            <div class="step">
+              <div class="step-line">
+                <div class="step-dot">1</div>
+                <div class="step-connector"></div>
+              </div>
+              <div class="step-body" id="bt-install" data-section="bt-install">
+                <div class="step-title" data-i18n="bt.step1.title">
+                  Add the dependency
+                </div>
+                <div class="code-block">
+                  <div class="code-header">
+                    <span class="code-filename">Cargo.toml</span>
+                    <button class="copy-btn" data-i18n="copy.btn">copy</button>
+                  </div>
+                  <pre><span class="ym">[dependencies]</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> <span class="st">"0.1"</span>  <span class="cm"># buildtime is the default feature</span>
+
+<span class="ym">[build-dependencies]</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> <span class="st">"0.1"</span>  <span class="cm"># needed by build.rs</span></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step">
+              <div class="step-line">
+                <div class="step-dot">2</div>
+                <div class="step-connector"></div>
+              </div>
+              <div class="step-body" id="bt-buildrs" data-section="bt-buildrs">
+                <div class="step-title" data-i18n-html="bt.step2.title">
+                  Create a <code>build.rs</code>
+                </div>
+                <p data-i18n-html="bt.step2.desc">
+                  <code>codegen::generate(dir, name)</code> scans
+                  <code>dir</code> for <code>.md</code> files, embeds their
+                  content and writes <code>$OUT_DIR/{name}_collection.rs</code>.
+                  It also emits <code>cargo:rerun-if-changed</code> so the build
+                  re-runs whenever a content file is added, edited, or removed.
+                </p>
+                <div class="code-block">
+                  <div class="code-header">
+                    <span class="code-filename">build.rs</span>
+                    <button class="copy-btn" data-i18n="copy.btn">copy</button>
+                  </div>
+                  <pre><span class="kw">fn</span> <span class="fn">main</span>() {
+    leptos_content_collection::codegen::<span class="fn">generate</span>(
+        <span class="st">"content/posts"</span>,
+        <span class="st">"posts"</span>,
+    ).<span class="fn">unwrap</span>();
+}</pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step">
+              <div class="step-line">
+                <div class="step-dot">3</div>
+                <div class="step-connector"></div>
+              </div>
+              <div class="step-body" id="bt-schema" data-section="bt-schema">
+                <div class="step-title" data-i18n="bt.step3.title">
+                  Define your schema and load
+                </div>
+                <div class="code-block">
+                  <div class="code-header">
+                    <span class="code-lang">rust</span>
+                    <button class="copy-btn" data-i18n="copy.btn">copy</button>
+                  </div>
+                  <pre><span class="kw">use</span> serde::<span class="ty">Deserialize</span>;
+<span class="kw">use</span> leptos_content_collection::{<span class="ty">Collection</span>, <span class="ty">EmbeddedEntry</span>};
+
+<span class="at">#[derive(Deserialize)]</span>
+<span class="kw">struct</span> <span class="ty">Post</span> {
+    title: <span class="ty">String</span>,
+    date:  <span class="ty">String</span>,
+    draft: <span class="ty">bool</span>,
+}
+
+<span class="kw">fn</span> <span class="fn">main</span>() {
+    <span class="kw">let</span> posts = <span class="ty">Collection</span>::&lt;<span class="ty">Post</span>&gt;::<span class="fn">from_embedded</span>(
+        <span class="at">include!</span>(concat!(<span class="at">env!</span>(<span class="st">"OUT_DIR"</span>), <span class="st">"/posts_collection.rs"</span>)),
+    ).<span class="fn">unwrap</span>();
+
+    <span class="kw">for</span> entry <span class="kw">in</span> posts.<span class="fn">entries</span>() {
+        <span class="kw">if</span> !entry.data.draft {
+            println!(<span class="st">"{} — {}"</span>, entry.slug, entry.data.title);
+            println!(<span class="st">"{}"</span>, entry.<span class="fn">render</span>()); <span class="cm">// Markdown → HTML</span>
+        }
+    }
+}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /steps -->
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SSR                                                          -->
+        <!-- ============================================================ -->
+        <section class="section" id="ssr" data-section="ssr">
+          <h2 class="section-title" data-i18n="ssr.title">SSR / Runtime</h2>
+          <p data-i18n-html="ssr.p">
+            Enable the <code>ssr</code> feature to read files from the
+            filesystem at request time. Useful when you want to edit content
+            without rebuilding.
+          </p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-filename">Cargo.toml</span>
+              <button class="copy-btn" data-i18n="copy.btn">copy</button>
+            </div>
+            <pre><span class="ym">[dependencies]</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"0.1"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"ssr"</span>] }</pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-lang">rust</span>
+              <button class="copy-btn" data-i18n="copy.btn">copy</button>
+            </div>
+            <pre><span class="kw">use</span> serde::<span class="ty">Deserialize</span>;
+<span class="kw">use</span> leptos_content_collection::<span class="ty">Collection</span>;
+
+<span class="at">#[derive(Deserialize)]</span>
+<span class="kw">struct</span> <span class="ty">Post</span> {
+    title: <span class="ty">String</span>,
+    date:  <span class="ty">String</span>,
+    draft: <span class="ty">bool</span>,
+}
+
+<span class="kw">fn</span> <span class="fn">main</span>() {
+    <span class="kw">let</span> posts = <span class="ty">Collection</span>::&lt;<span class="ty">Post</span>&gt;::<span class="fn">load</span>(<span class="st">"content/posts"</span>).<span class="fn">unwrap</span>();
+
+    <span class="kw">for</span> entry <span class="kw">in</span> posts.<span class="fn">entries</span>() {
+        <span class="kw">if</span> !entry.data.draft {
+            println!(<span class="st">"{} — {}"</span>, entry.slug, entry.data.title);
+            println!(<span class="st">"{}"</span>, entry.<span class="fn">render</span>()); <span class="cm">// Markdown → HTML</span>
+        }
+    }
+}</pre>
+          </div>
+
+          <div class="callout callout-warn">
+            <span class="callout-icon" aria-hidden="true"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"
+                ></path></svg
+            ></span>
+            <span data-i18n-html="ssr.callout">
+              <code>Collection::load()</code> uses <code>std::fs</code> and will
+              not compile for <code>wasm32</code> targets. In a Leptos project,
+              call it only inside <code>#[server]</code> functions or Axum
+              handlers.
+            </span>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- LEPTOS                                                        -->
+        <!-- ============================================================ -->
+        <section class="section" id="leptos" data-section="leptos">
+          <h2 class="section-title" data-i18n="leptos.title">
+            Leptos Integration
+          </h2>
+          <p data-i18n-html="leptos.p">
+            A typical Leptos + Axum setup uses <strong>both features</strong>:
+            <code>buildtime</code> so the WASM bundle can access data without a
+            server round-trip, and <code>ssr</code> (optionally) inside
+            <code>#[server]</code> functions for hot-reloadable content in
+            development.
+          </p>
+
+          <div class="subsection">
+            <div class="subsection-title">Cargo.toml</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Cargo.toml</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="ym">[dependencies]</span>
+<span class="cm"># buildtime is the default — works for both SSR and WASM</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> { <span class="at">path</span> <span class="op">=</span> <span class="st">"…"</span> }
+
+<span class="ym">[build-dependencies]</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> { <span class="at">path</span> <span class="op">=</span> <span class="st">"…"</span> }
+
+<span class="ym">[features]</span>
+<span class="at">ssr</span> <span class="op">=</span> [
+    <span class="cm"># …other ssr deps…</span>
+    <span class="st">"leptos-content-collection/ssr"</span>,
+]</pre>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-title">build.rs</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">build.rs</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="kw">fn</span> <span class="fn">main</span>() {
+    leptos_content_collection::codegen::<span class="fn">generate</span>(<span class="st">"content/posts"</span>, <span class="st">"posts"</span>).<span class="fn">unwrap</span>();
+}</pre>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-title" data-i18n="leptos.sub3.title">
+              app.rs — using buildtime data (works in SSR + WASM)
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">rust</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="kw">use</span> leptos::prelude::<span class="op">*</span>;
+<span class="kw">use</span> serde::{<span class="ty">Deserialize</span>, <span class="ty">Serialize</span>};
+<span class="kw">use</span> leptos_content_collection::{<span class="ty">Collection</span>, <span class="ty">EmbeddedEntry</span>};
+
+<span class="at">#[derive(Deserialize, Serialize, Clone)]</span>
+<span class="kw">struct</span> <span class="ty">PostFrontmatter</span> {
+    title:       <span class="ty">String</span>,
+    date:        <span class="ty">String</span>,
+    description: <span class="ty">String</span>,
+}
+
+<span class="cm">// Synchronous — no server function needed, works on both server and client.</span>
+<span class="kw">fn</span> <span class="fn">load_posts</span>() -&gt; <span class="ty">Vec</span>&lt;<span class="ty">PostFrontmatter</span>&gt; {
+    <span class="kw">static</span> <span class="nm">ENTRIES</span>: &amp;[<span class="ty">EmbeddedEntry</span>] =
+        <span class="at">include!</span>(concat!(<span class="at">env!</span>(<span class="st">"OUT_DIR"</span>), <span class="st">"/posts_collection.rs"</span>));
+
+    <span class="ty">Collection</span>::&lt;<span class="ty">PostFrontmatter</span>&gt;::<span class="fn">from_embedded</span>(<span class="nm">ENTRIES</span>)
+        .<span class="fn">unwrap</span>()
+        .<span class="fn">into_entries</span>()
+        .<span class="fn">into_iter</span>()
+        .<span class="fn">map</span>(|e| e.data)
+        .<span class="fn">collect</span>()
+}
+
+<span class="at">#[component]</span>
+<span class="kw">fn</span> <span class="fn">BlogPage</span>() -&gt; <span class="kw">impl</span> <span class="ty">IntoView</span> {
+    <span class="kw">let</span> posts = <span class="fn">load_posts</span>();
+    view! {
+        &lt;<span class="ty">ul</span>&gt;
+            {posts.<span class="fn">into_iter</span>().<span class="fn">map</span>(|p| view! {
+                &lt;<span class="ty">li</span>&gt;{p.title}&lt;/<span class="ty">li</span>&gt;
+            }).<span class="fn">collect_view</span>()}
+        &lt;/<span class="ty">ul</span>&gt;
+    }
+}</pre>
+            </div>
+          </div>
+
+          <div class="callout callout-info">
+            <span class="callout-icon" aria-hidden="true"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"
+                ></path></svg
+            ></span>
+            <span data-i18n-html="leptos.callout">
+              <code>codegen::generate</code> is gated with
+              <code>cfg(not(target_arch = "wasm32"))</code> inside the crate, so
+              it is never compiled into the WASM bundle — only into
+              <code>build.rs</code>
+              (which runs on the host).
+            </span>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- YEW                                                          -->
+        <!-- ============================================================ -->
+        <section class="section" id="yew" data-section="yew">
+          <h2 class="section-title" data-i18n="yew.title">Yew Integration</h2>
+          <p data-i18n-html="yew.p">
+            Yew compiles to WASM, so only the <code>buildtime</code> feature
+            works — content is embedded at compile time and requires no
+            filesystem access at runtime.
+          </p>
+
+          <div class="subsection">
+            <div class="subsection-title">Cargo.toml</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Cargo.toml</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="ym">[dependencies]</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> <span class="st">"0.1"</span>  <span class="cm"># buildtime is the default feature</span>
+<span class="at">yew</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"0.21"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"csr"</span>] }
+<span class="at">serde</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"1"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"derive"</span>] }
+
+<span class="ym">[build-dependencies]</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> <span class="st">"0.1"</span></pre>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-title">build.rs</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">build.rs</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="kw">fn</span> <span class="fn">main</span>() {
+    leptos_content_collection::codegen::<span class="fn">generate</span>(<span class="st">"content/posts"</span>, <span class="st">"posts"</span>).<span class="fn">unwrap</span>();
+}</pre>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-title" data-i18n="yew.sub3.title">
+              app.rs — Yew component
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">rust</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="kw">use</span> yew::prelude::<span class="op">*</span>;
+<span class="kw">use</span> serde::<span class="ty">Deserialize</span>;
+<span class="kw">use</span> leptos_content_collection::{<span class="ty">Collection</span>, <span class="ty">EmbeddedEntry</span>};
+
+<span class="at">#[derive(Deserialize, Clone)]</span>
+<span class="kw">struct</span> <span class="ty">Post</span> {
+    title: <span class="ty">String</span>,
+    date:  <span class="ty">String</span>,
+    draft: <span class="ty">bool</span>,
+}
+
+<span class="at">#[function_component(App)]</span>
+<span class="kw">fn</span> <span class="fn">app</span>() -&gt; <span class="ty">Html</span> {
+    <span class="kw">static</span> <span class="nm">ENTRIES</span>: &amp;[<span class="ty">EmbeddedEntry</span>] =
+        <span class="at">include!</span>(concat!(<span class="at">env!</span>(<span class="st">"OUT_DIR"</span>), <span class="st">"/posts_collection.rs"</span>));
+
+    <span class="kw">let</span> posts = <span class="ty">Collection</span>::&lt;<span class="ty">Post</span>&gt;::<span class="fn">from_embedded</span>(<span class="nm">ENTRIES</span>)
+        .<span class="fn">unwrap</span>()
+        .<span class="fn">into_entries</span>();
+
+    html! {
+        &lt;<span class="ty">ul</span>&gt;
+            { <span class="kw">for</span> posts.<span class="fn">iter</span>().<span class="fn">filter</span>(|p| !p.data.draft).<span class="fn">map</span>(|p| html! {
+                &lt;<span class="ty">li</span>&gt;
+                    &lt;<span class="ty">strong</span>&gt;{ &amp;p.data.title }&lt;/<span class="ty">strong</span>&gt;
+                    { <span class="st">" — " </span>}{ &amp;p.data.date }
+                &lt;/<span class="ty">li</span>&gt;
+            }) }
+        &lt;/<span class="ty">ul</span>&gt;
+    }
+}
+
+<span class="kw">fn</span> <span class="fn">main</span>() {
+    yew::<span class="fn">Renderer</span>::&lt;<span class="ty">App</span>&gt;::<span class="fn">new</span>().<span class="fn">render</span>();
+}</pre>
+            </div>
+          </div>
+
+          <div class="callout callout-warn">
+            <span class="callout-icon" aria-hidden="true"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"
+                ></path></svg
+            ></span>
+            <span data-i18n-html="yew.callout">
+              The <code>ssr</code> feature uses <code>std::fs</code> and will
+              not compile for <code>wasm32</code> targets. Stick with
+              <code>buildtime</code> for pure-WASM Yew apps.
+            </span>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- DIOXUS                                                        -->
+        <!-- ============================================================ -->
+        <section class="section" id="dioxus" data-section="dioxus">
+          <h2 class="section-title" data-i18n="dioxus.title">
+            Dioxus Integration
+          </h2>
+          <p data-i18n-html="dioxus.p">
+            Dioxus supports multiple renderers (web, desktop, mobile). For WASM
+            targets use
+            <code>buildtime</code>; for desktop / native targets both features
+            work.
+          </p>
+
+          <div class="subsection">
+            <div class="subsection-title" data-i18n="dioxus.sub.wasm.title">
+              Web (WASM) — buildtime
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Cargo.toml</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="ym">[dependencies]</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> <span class="st">"0.1"</span>  <span class="cm"># buildtime is the default feature</span>
+<span class="at">dioxus</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"0.6"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"web"</span>] }
+<span class="at">serde</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"1"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"derive"</span>] }
+
+<span class="ym">[build-dependencies]</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> <span class="st">"0.1"</span></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">rust</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="kw">use</span> dioxus::prelude::<span class="op">*</span>;
+<span class="kw">use</span> serde::<span class="ty">Deserialize</span>;
+<span class="kw">use</span> leptos_content_collection::{<span class="ty">Collection</span>, <span class="ty">EmbeddedEntry</span>};
+
+<span class="at">#[derive(Deserialize, Clone)]</span>
+<span class="kw">struct</span> <span class="ty">Post</span> {
+    title: <span class="ty">String</span>,
+    date:  <span class="ty">String</span>,
+    draft: <span class="ty">bool</span>,
+}
+
+<span class="at">#[component]</span>
+<span class="kw">fn</span> <span class="fn">BlogList</span>() -&gt; <span class="ty">Element</span> {
+    <span class="kw">static</span> <span class="nm">ENTRIES</span>: &amp;[<span class="ty">EmbeddedEntry</span>] =
+        <span class="at">include!</span>(concat!(<span class="at">env!</span>(<span class="st">"OUT_DIR"</span>), <span class="st">"/posts_collection.rs"</span>));
+
+    <span class="kw">let</span> posts = <span class="ty">Collection</span>::&lt;<span class="ty">Post</span>&gt;::<span class="fn">from_embedded</span>(<span class="nm">ENTRIES</span>)
+        .<span class="fn">unwrap</span>()
+        .<span class="fn">into_entries</span>();
+
+    rsx! {
+        ul {
+            <span class="kw">for</span> post <span class="kw">in</span> posts.<span class="fn">into_iter</span>().<span class="fn">filter</span>(|p| !p.data.draft) {
+                li {
+                    strong { { post.data.title.<span class="fn">clone</span>() } }
+                    span { <span class="st">" — {post.data.date}"</span> }
+                }
+            }
+        }
+    }
+}
+
+<span class="kw">fn</span> <span class="fn">main</span>() {
+    dioxus::web::<span class="fn">launch</span>(<span class="ty">BlogList</span>);
+}</pre>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-title" data-i18n="dioxus.sub.desktop.title">
+              Desktop — ssr feature (runtime filesystem)
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Cargo.toml</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="ym">[dependencies]</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"0.1"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"ssr"</span>] }
+<span class="at">dioxus</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"0.6"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"desktop"</span>] }
+<span class="at">serde</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"1"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"derive"</span>] }</pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">rust</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="kw">use</span> dioxus::prelude::<span class="op">*</span>;
+<span class="kw">use</span> serde::<span class="ty">Deserialize</span>;
+<span class="kw">use</span> leptos_content_collection::<span class="ty">Collection</span>;
+
+<span class="at">#[derive(Deserialize, Clone)]</span>
+<span class="kw">struct</span> <span class="ty">Post</span> {
+    title: <span class="ty">String</span>,
+    draft: <span class="ty">bool</span>,
+}
+
+<span class="at">#[component]</span>
+<span class="kw">fn</span> <span class="fn">BlogList</span>() -&gt; <span class="ty">Element</span> {
+    <span class="cm">// Reads .md files from disk at runtime — only works on native targets</span>
+    <span class="kw">let</span> posts = <span class="ty">Collection</span>::&lt;<span class="ty">Post</span>&gt;::<span class="fn">load</span>(<span class="st">"content/posts"</span>)
+        .<span class="fn">unwrap</span>()
+        .<span class="fn">into_entries</span>();
+
+    rsx! {
+        ul {
+            <span class="kw">for</span> post <span class="kw">in</span> posts.<span class="fn">into_iter</span>().<span class="fn">filter</span>(|p| !p.data.draft) {
+                li { { post.data.title.<span class="fn">clone</span>() } }
+            }
+        }
+    }
+}
+
+<span class="kw">fn</span> <span class="fn">main</span>() {
+    dioxus::desktop::<span class="fn">launch</span>(<span class="ty">BlogList</span>);
+}</pre>
+            </div>
+          </div>
+
+          <div class="callout callout-tip">
+            <span class="callout-icon" aria-hidden="true"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  d="M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h64v-6a32.15,32.15,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Zm-16.11-9.34a57.6,57.6,0,0,0-46.56-46.55,8,8,0,0,0-2.66,15.78c16.57,2.79,30.63,16.85,33.44,33.45A8,8,0,0,0,176,104a9,9,0,0,0,1.35-.11A8,8,0,0,0,183.89,94.66Z"
+                ></path></svg
+            ></span>
+            <span data-i18n-html="dioxus.callout">
+              Freya (a native GUI framework built on Dioxus) follows the same
+              pattern as the Desktop example above — it runs natively so both
+              <code>buildtime</code> and <code>ssr</code> features are
+              available.
+            </span>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- FREYA                                                        -->
+        <!-- ============================================================ -->
+        <section class="section" id="freya" data-section="freya">
+          <h2 class="section-title" data-i18n="freya.title">
+            Freya Integration
+          </h2>
+          <p data-i18n-html="freya.p">
+            Freya is a native cross-platform GUI framework for Rust, so it can
+            use
+            <strong>both</strong> crate features. Use <code>buildtime</code> for
+            embedded content in production builds, and optionally
+            <code>ssr</code> in native targets when you want live filesystem
+            content during development.
+          </p>
+
+          <div class="subsection">
+            <div class="subsection-title" data-i18n="freya.sub.buildtime">
+              Buildtime (recommended)
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Cargo.toml</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="ym">[dependencies]</span>
+<span class="at">freya</span> <span class="op">=</span> <span class="st">"0.4.0-rc.15"</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> <span class="st">"0.1"</span>  <span class="cm"># buildtime is default</span>
+<span class="at">serde</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"1"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"derive"</span>] }
+
+<span class="ym">[build-dependencies]</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> <span class="st">"0.1"</span></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">build.rs</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="kw">fn</span> <span class="fn">main</span>() {
+    leptos_content_collection::codegen::<span class="fn">generate</span>(<span class="st">"content/posts"</span>, <span class="st">"posts"</span>).<span class="fn">unwrap</span>();
+}</pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">rust</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="kw">use</span> freya::prelude::<span class="op">*</span>;
+<span class="kw">use</span> serde::<span class="ty">Deserialize</span>;
+<span class="kw">use</span> leptos_content_collection::{<span class="ty">Collection</span>, <span class="ty">EmbeddedEntry</span>};
+
+<span class="at">#[derive(Deserialize, Clone)]</span>
+<span class="kw">struct</span> <span class="ty">Post</span> {
+    title: <span class="ty">String</span>,
+    date:  <span class="ty">String</span>,
+    draft: <span class="ty">bool</span>,
+}
+
+<span class="kw">fn</span> <span class="fn">load_posts</span>() -&gt; <span class="ty">Vec</span>&lt;<span class="ty">Post</span>&gt; {
+    <span class="kw">static</span> <span class="nm">ENTRIES</span>: &amp;[<span class="ty">EmbeddedEntry</span>] =
+        <span class="at">include!</span>(concat!(<span class="at">env!</span>(<span class="st">"OUT_DIR"</span>), <span class="st">"/posts_collection.rs"</span>));
+
+    <span class="ty">Collection</span>::&lt;<span class="ty">Post</span>&gt;::<span class="fn">from_embedded</span>(<span class="nm">ENTRIES</span>)
+        .<span class="fn">unwrap</span>()
+        .<span class="fn">into_entries</span>()
+        .<span class="fn">into_iter</span>()
+        .<span class="fn">map</span>(|entry| entry.data)
+        .<span class="fn">filter</span>(|post| !post.draft)
+        .<span class="fn">collect</span>()
+}
+
+<span class="kw">fn</span> <span class="fn">app</span>() -&gt; <span class="kw">impl</span> <span class="ty">IntoElement</span> {
+    <span class="kw">let</span> posts = <span class="fn">load_posts</span>();
+
+    rect()
+        .vertical()
+        .padding(16.)
+        .spacing(8.)
+        .children(posts.<span class="fn">into_iter</span>().<span class="fn">map</span>(|post| {
+            label().text(<span class="fn">format</span>!(<span class="st">"{} - {}"</span>, post.date, post.title)).into()
+        }))
+}
+
+<span class="kw">fn</span> <span class="fn">main</span>() {
+    launch(<span class="fn">app</span>);
+}</pre>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-title" data-i18n-html="freya.sub.runtime">
+              Runtime content with <code>ssr</code> (optional)
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-filename">Cargo.toml</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="ym">[dependencies]</span>
+<span class="at">freya</span> <span class="op">=</span> <span class="st">"0.4.0-rc.15"</span>
+<span class="at">leptos-content-collection</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"0.1"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"ssr"</span>] }
+<span class="at">serde</span> <span class="op">=</span> { <span class="at">version</span> <span class="op">=</span> <span class="st">"1"</span>, <span class="at">features</span> <span class="op">=</span> [<span class="st">"derive"</span>] }</pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">rust</span>
+                <button class="copy-btn" data-i18n="copy.btn">copy</button>
+              </div>
+              <pre><span class="kw">use</span> freya::prelude::<span class="op">*</span>;
+<span class="kw">use</span> serde::<span class="ty">Deserialize</span>;
+<span class="kw">use</span> leptos_content_collection::<span class="ty">Collection</span>;
+
+<span class="at">#[derive(Deserialize, Clone)]</span>
+<span class="kw">struct</span> <span class="ty">Post</span> {
+    title: <span class="ty">String</span>,
+    draft: <span class="ty">bool</span>,
+}
+
+<span class="kw">fn</span> <span class="fn">app</span>() -&gt; <span class="kw">impl</span> <span class="ty">IntoElement</span> {
+    <span class="kw">let</span> posts = <span class="ty">Collection</span>::&lt;<span class="ty">Post</span>&gt;::<span class="fn">load</span>(<span class="st">"content/posts"</span>)
+        .<span class="fn">unwrap</span>()
+        .<span class="fn">into_entries</span>();
+
+    rect()
+        .vertical()
+        .padding(16.)
+        .spacing(8.)
+        .children(
+            posts
+                .<span class="fn">into_iter</span>()
+                .<span class="fn">filter</span>(|post| !post.data.draft)
+                .<span class="fn">map</span>(|post| label().text(post.data.title).into()),
+        )
+}
+
+<span class="kw">fn</span> <span class="fn">main</span>() {
+    launch(<span class="fn">app</span>);
+}</pre>
+            </div>
+          </div>
+
+          <div class="callout callout-tip">
+            <span class="callout-icon" aria-hidden="true"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  d="M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h64v-6a32.15,32.15,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Zm-16.11-9.34a57.6,57.6,0,0,0-46.56-46.55,8,8,0,0,0-2.66,15.78c16.57,2.79,30.63,16.85,33.44,33.45A8,8,0,0,0,176,104a9,9,0,0,0,1.35-.11A8,8,0,0,0,183.89,94.66Z"
+                ></path></svg
+            ></span>
+            <span data-i18n-html="freya.callout">
+              Freya does <strong>not</strong> target <code>wasm32</code> today.
+              That means <code>Collection::load()</code> is available for
+              desktop/native apps, while
+              <code>Collection::from_embedded()</code> remains ideal for
+              self-contained binaries.
+            </span>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- API REFERENCE                                                 -->
+        <!-- ============================================================ -->
+
+        <!-- Collection<T> -->
+        <section
+          class="section"
+          id="api-collection"
+          data-section="api-collection"
+        >
+          <h2 class="section-title">Collection&lt;T&gt;</h2>
+          <p data-i18n-html="api.collection.p">
+            The main type. <code>T</code> is your schema struct — it must
+            implement <code>serde::Deserialize</code>.
+          </p>
+
+          <table class="api-table">
+            <thead>
+              <tr>
+                <th data-i18n="api.th.method">Method</th>
+                <th data-i18n="api.th.feature">Feature</th>
+                <th data-i18n="api.th.desc">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Collection::load(dir)</code></td>
+                <td><code>ssr</code></td>
+                <td data-i18n-html="api.collection.load.desc">
+                  Reads all <code>.md</code> files from <code>dir</code> at
+                  runtime. Returns
+                  <code>Result&lt;Self, CollectionError&gt;</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>Collection::from_embedded(entries)</code></td>
+                <td><code>buildtime</code></td>
+                <td data-i18n-html="api.collection.from-embedded.desc">
+                  Builds a collection from a
+                  <code>&amp;[EmbeddedEntry]</code> produced by
+                  <code>codegen::generate</code>. Returns
+                  <code>Result&lt;Self, CollectionError&gt;</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>collection.entries()</code></td>
+                <td>—</td>
+                <td data-i18n-html="api.collection.entries.desc">
+                  Returns <code>&amp;[CollectionEntry&lt;T&gt;]</code> in load
+                  order.
+                </td>
+              </tr>
+              <tr>
+                <td><code>collection.into_entries()</code></td>
+                <td>—</td>
+                <td data-i18n-html="api.collection.into-entries.desc">
+                  Consumes the collection and returns
+                  <code>Vec&lt;CollectionEntry&lt;T&gt;&gt;</code>.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- CollectionEntry<T> -->
+        <section class="section" id="api-entry" data-section="api-entry">
+          <h2 class="section-title">CollectionEntry&lt;T&gt;</h2>
+          <p data-i18n="api.entry.p">A single entry in a collection.</p>
+
+          <table class="api-table">
+            <thead>
+              <tr>
+                <th data-i18n="api.th.field">Field / Method</th>
+                <th data-i18n="api.th.type">Type</th>
+                <th data-i18n="api.th.desc">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>entry.slug</code></td>
+                <td><code>String</code></td>
+                <td data-i18n-html="api.entry.slug.desc">
+                  Filename without extension, e.g. <code>"hello-world"</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>entry.data</code></td>
+                <td><code>T</code></td>
+                <td data-i18n="api.entry.data.desc">
+                  The deserialized frontmatter matching your schema struct.
+                </td>
+              </tr>
+              <tr>
+                <td><code>entry.body</code></td>
+                <td><code>String</code></td>
+                <td data-i18n-html="api.entry.body.desc">
+                  Raw Markdown body (everything after the closing
+                  <code>---</code>).
+                </td>
+              </tr>
+              <tr>
+                <td><code>entry.render()</code></td>
+                <td><code>String</code></td>
+                <td data-i18n-html="api.entry.render.desc">
+                  Renders <code>body</code> to an HTML string using
+                  <code>pulldown-cmark</code> with all extensions enabled.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- EmbeddedEntry -->
+        <section
+          class="section"
+          id="api-embedded-entry"
+          data-section="api-embedded-entry"
+        >
+          <h2 class="section-title">EmbeddedEntry</h2>
+          <p data-i18n-html="api.embedded.p">
+            The element type of the array written by
+            <code>codegen::generate</code>. You generally only interact with it
+            indirectly via <code>Collection::from_embedded</code>, but the
+            fields are public if you need to inspect them.
+          </p>
+
+          <table class="api-table">
+            <thead>
+              <tr>
+                <th data-i18n="api.th.field">Field</th>
+                <th data-i18n="api.th.type">Type</th>
+                <th data-i18n="api.th.desc">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>slug</code></td>
+                <td><code>&amp;'static str</code></td>
+                <td data-i18n="api.embedded.slug.desc">
+                  Filename without extension.
+                </td>
+              </tr>
+              <tr>
+                <td><code>frontmatter_yaml</code></td>
+                <td><code>&amp;'static str</code></td>
+                <td data-i18n-html="api.embedded.fm.desc">
+                  Raw YAML string between the <code>---</code> delimiters.
+                </td>
+              </tr>
+              <tr>
+                <td><code>body</code></td>
+                <td><code>&amp;'static str</code></td>
+                <td data-i18n="api.embedded.body.desc">Raw Markdown body.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- CollectionError -->
+        <section class="section" id="api-error" data-section="api-error">
+          <h2 class="section-title">CollectionError</h2>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">rust</span></div>
+            <pre><span class="kw">pub enum</span> <span class="ty">CollectionError</span> {
+    <span class="cm">/// An IO error occurred while reading a file. (ssr only)</span>
+    <span class="ty">Io</span>(std::io::<span class="ty">Error</span>),
+
+    <span class="cm">/// A file is missing its `---` frontmatter block. Includes the file path.</span>
+    <span class="ty">MissingFrontmatter</span>(<span class="ty">String</span>),
+
+    <span class="cm">/// The YAML frontmatter could not be deserialised into `T`.</span>
+    <span class="ty">InvalidFrontmatter</span> {
+        path:   <span class="ty">String</span>,
+        source: serde_yml::<span class="ty">Error</span>,
+    },
+}</pre>
+          </div>
+        </section>
+
+        <!-- codegen::generate -->
+        <section class="section" id="api-codegen" data-section="api-codegen">
+          <h2 class="section-title">codegen::generate</h2>
+          <p data-i18n-html="api.codegen.p">
+            Available only on non-WASM targets when the
+            <code>buildtime</code> feature is active. Intended to be called from
+            <code>build.rs</code>.
+          </p>
+
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">rust</span></div>
+            <pre><span class="kw">pub fn</span> <span class="fn">generate</span>(
+    dir:         <span class="kw">impl</span> AsRef&lt;<span class="ty">Path</span>&gt;,
+    output_name: &amp;<span class="ty">str</span>,
+) -&gt; <span class="ty">Result</span>&lt;(), <span class="ty">Box</span>&lt;<span class="kw">dyn</span> std::error::<span class="ty">Error</span>&gt;&gt;</pre>
+          </div>
+
+          <table class="api-table">
+            <thead>
+              <tr>
+                <th data-i18n="api.th.param">Parameter</th>
+                <th data-i18n="api.th.desc">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>dir</code></td>
+                <td data-i18n-html="api.codegen.dir.desc">
+                  Path to the directory containing <code>.md</code> files,
+                  relative to the crate root.
+                </td>
+              </tr>
+              <tr>
+                <td><code>output_name</code></td>
+                <td data-i18n-html="api.codegen.name.desc">
+                  Name used for the generated file:
+                  <code>$OUT_DIR/{output_name}_collection.rs</code>.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p data-i18n-html="api.codegen.note">
+            Also emits <code>cargo:rerun-if-changed</code> for the directory and
+            each individual <code>.md</code> file so incremental builds work
+            correctly.
+          </p>
+        </section>
+
+        <!-- ---- Dependencies ---- -->
+        <section class="section" id="dependencies" data-section="dependencies">
+          <h2 class="section-title" data-i18n="deps.title">Dependencies</h2>
+
+          <table class="api-table">
+            <thead>
+              <tr>
+                <th data-i18n="api.th.crate">Crate</th>
+                <th data-i18n="api.th.purpose">Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>serde</code></td>
+                <td data-i18n-html="deps.serde">
+                  Deserialising frontmatter YAML into your schema struct.
+                </td>
+              </tr>
+              <tr>
+                <td><code>serde_yml</code></td>
+                <td data-i18n="deps.serde-yml">YAML parsing.</td>
+              </tr>
+              <tr>
+                <td><code>pulldown-cmark</code></td>
+                <td data-i18n-html="deps.pulldown">
+                  Markdown → HTML rendering, with all extensions enabled.
+                </td>
+              </tr>
+              <tr>
+                <td><code>thiserror</code></td>
+                <td data-i18n="deps.thiserror">Error type derivation.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="deps-note" data-i18n="deps.note">
+            No Leptos dependency. No async runtime. No macros beyond standard
+            derive.
+          </p>
+        </section>
+      </main>
+    </div>
+
+    <script src="webpage/app.js"></script>
+  </body>
+</html>
